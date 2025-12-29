@@ -1,397 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="description"
+        content="VisionDirector: Vision-Language Guided Closed-Loop Refinement for Generative Image Synthesis.">
+  <meta name="keywords"
+        content="Vision-Language Models, Image Generation, Image Editing, Diffusion Models, Agents, Reinforcement Learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>VisionDirector | Vision-Language Guided Image Refinement</title>
+  <title>
+    VisionDirector: Vision-Language Guided Closed-Loop Refinement
+    for Generative Image Synthesis
+  </title>
 
-  <!-- Meta -->
-  <meta name="description" content="VisionDirector: A vision-language director that plans, verifies, and refines image generation and editing under long, multi-goal instructions.">
-  <meta name="keywords" content="Vision-Language Models, Image Generation, Diffusion Models, Agents, Reinforcement Learning, CVPR">
-  <meta name="author" content="VisionDirector Team">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
 
-  <!-- Favicon -->
-  <link rel="icon" href="assets/favicon.png">
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Academic Page CSS (same style as GeoText / Nerfies) -->
+  <link rel="stylesheet" href="./static/css/index.css">
 
-  <style>
-    :root {
-      --text: #111;
-      --subtext: #555;
-      --bg: #ffffff;
-      --light-bg: #f7f7f7;
-      --accent: #b91c1c;
-      --max-width: 1100px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      line-height: 1.65;
-    }
-
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover { text-decoration: underline; }
-
-    .container {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-
-    h1 {
-      font-size: 44px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      margin-bottom: 18px;
-    }
-
-    h2 {
-      font-size: 30px;
-      margin-bottom: 14px;
-      position: relative;
-    }
-
-    h2::after {
-      content: "";
-      display: block;
-      width: 48px;
-      height: 3px;
-      background: var(--accent);
-      margin-top: 10px;
-      border-radius: 2px;
-    }
-
-    h3 {
-      font-size: 21px;
-      margin-bottom: 8px;
-    }
-
-    p {
-      font-size: 17px;
-      color: var(--subtext);
-      margin-top: 0;
-    }
-
-    ul {
-      padding-left: 18px;
-      color: var(--subtext);
-      font-size: 16px;
-    }
-
-    /* ================= HERO ================= */
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 60px;
-      align-items: center;
-      padding-top: 120px;
-      padding-bottom: 100px;
-    }
-
-    .hero-text {
-      text-align: left;
-    }
-
-    .hero-tagline {
-      font-size: 20px;
-      color: #333;
-      margin-bottom: 14px;
-    }
-
-    .hero-sub {
-      font-size: 17px;
-      color: #777;
-      margin-bottom: 30px;
-    }
-
-    .hero-visual img {
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid #ddd;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    }
-
-    .buttons { margin-top: 30px; }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 22px;
-      margin: 6px 6px 0 0;
-      border-radius: 7px;
-      border: 1px solid #ddd;
-      font-weight: 600;
-      background: #fff;
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    /* ================= SECTIONS ================= */
-
-    section { margin-top: 120px; }
-
-    .light { background: var(--light-bg); }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 32px;
-      margin-top: 36px;
-    }
-
-    .card {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 26px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.08);
-    }
-
-    .card.core {
-      border: 1.5px solid var(--accent);
-      box-shadow: 0 12px 32px rgba(185,28,28,0.08);
-    }
-
-    .figure {
-      margin: 42px 0;
-      text-align: center;
-    }
-
-    .figure img {
-      max-width: 100%;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-    }
-
-    .caption {
-      font-size: 14px;
-      color: #777;
-      margin-top: 10px;
-    }
-
-    footer {
-      margin-top: 140px;
-      padding: 50px 24px;
-      border-top: 1px solid #eee;
-      text-align: center;
-      font-size: 14px;
-      color: #777;
-    }
-
-    /* ================= MOBILE ================= */
-
-    @media (max-width: 900px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-      .hero-text { text-align: center; }
-    }
-  </style>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
 </head>
 
 <body>
 
-  <!-- ================= HERO ================= -->
-  <div class="hero-grid container">
-    <div class="hero-text">
-      <h1>VisionDirector</h1>
+<!-- ================= TITLE / AUTHORS ================= -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
 
-      <p class="hero-tagline">
-        A <b>vision-language director</b> that plans, verifies, and refines
-        image generation under long, multi-goal instructions.
-      </p>
+          <h1 class="title is-1 publication-title">
+            VisionDirector: Vision-Language Guided Closed-Loop Refinement
+            for Generative Image Synthesis
+          </h1>
 
-      <p class="hero-sub">
-        Not a new generator — but a <b>control system</b> for generative models.
-      </p>
+          <!-- Authors -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Meng Chu<sup>1</sup>,</span>
+            <span class="author-block">Senqiao Yang<sup>2</sup>,</span>
+           <span class="author-block">Haoxuan Che<sup>3</sup><sup>*†</sup>,</span>
+            <span class="author-block">Suiyun Zhang<sup>3</sup>,</span>
+            <span class="author-block">Xichen Zhang<sup>1</sup>,</span>
+            <span class="author-block">Shaozuo Yu<sup>2</sup>,</span>
+            <span class="author-block">Haokun Gui<sup>1</sup>,</span>
+            <span class="author-block">Zhefan Rao<sup>1</sup>,</span>
+            <span class="author-block">Dandan Tu<sup>3</sup>,</span>
+            <span class="author-block">Rui Liu<sup>3</sup><sup>*</sup>,</span>
+            <span class="author-block">Jiaya Jia<sup>1</sup></span>
+          </div>
 
-      <div class="buttons">
-        <a class="btn primary" href="paper/VisionDirector.pdf">Paper</a>
-        <a class="btn" href="paper/supplementary.pdf">Supplementary</a>
-        <a class="btn" href="https://github.com/your-org/LGBench">Dataset</a>
-        <a class="btn" href="https://github.com/your-org/VisionDirector">Code</a>
-      </div>
-    </div>
+          <!-- Affiliations -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>HKUST</span>,
+            <span class="author-block"><sup>2</sup>CUHK</span>,
+            <span class="author-block"><sup>3</sup>Huawei Research</span>
+          </div>
 
-    <div class="hero-visual">
-      <img src="assets/hero_pipeline.png" alt="VisionDirector overview">
-      <div class="caption">
-        VisionDirector plans, verifies, and refines generation with closed-loop control.
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>*</sup>Corresponding authors</span>
+          </div>
+
+          <!-- Links -->
+          <div class="publication-links">
+
+            <span class="link-block">
+              <a href="https://arxiv.org/abs/XXXX.XXXXX"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="ai ai-arxiv"></i>
+                </span>
+                <span>Paper</span>
+              </a>
+            </span>
+
+            <span class="link-block">
+              <a href="./static/pdfs/supplementary.pdf"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="fas fa-file-pdf"></i>
+                </span>
+                <span>Supplementary</span>
+              </a>
+            </span>
+
+            <span class="link-block">
+              <a href="https://github.com/your-org/VisionDirector"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                <span>Code</span>
+              </a>
+            </span>
+
+            <span class="link-block">
+              <a href="https://github.com/your-org/LGBench"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="fas fa-database"></i>
+                </span>
+                <span>LGBench Dataset</span>
+              </a>
+            </span>
+
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ================= MOTIVATION ================= -->
-  <section class="light">
-    <div class="container">
-      <h2>Why VisionDirector?</h2>
-      <p>
-        Real-world creative briefs are long, multi-objective, and tightly coupled.
-        Existing diffusion models excel at aesthetics, but struggle to faithfully
-        follow long instructions involving layout, typography, lighting, and semantics.
-      </p>
-
-      <div class="grid-3">
-        <div class="card">
-          <h3>Real Designer Prompts</h3>
-          <p>
-            150–300 word briefs with 15–25 interdependent goals across composition,
-            text, color, and lighting.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Existing Pipelines</h3>
-          <p>
-            One-shot prompting often misses local constraints and accumulates
-            hallucinations across edits.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>VisionDirector</h3>
-          <p>
-            Goal-aware planning, iterative refinement, and verification after
-            every generation or edit.
-          </p>
+<!-- ================= ABSTRACT ================= -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          Professional image creation often relies on long, multi-goal instructions
+          specifying global composition, local object placement, typography, and
+          stylistic constraints. While modern diffusion models achieve strong visual
+          fidelity, they frequently fail to satisfy such tightly coupled objectives.
+          <br><br>
+          To systematically expose this gap, we introduce <b>LongGoalBench (LGBench)</b>,
+          a dual-modality benchmark comprising 2,000 text-to-image and image-to-image
+          tasks with over 29,000 annotated goals and automated goal-level verification.
+          <br><br>
+          We further propose <b>VisionDirector</b>, a vision-language guided closed-loop
+          framework that decomposes long instructions into structured goals, dynamically
+          plans generation or editing actions, and verifies goal satisfaction after each
+          step without retraining diffusion backbones.
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ================= METHOD ================= -->
-  <section>
-    <div class="container">
-      <h2>What is VisionDirector?</h2>
-      <p>
-        VisionDirector is a closed-loop control system for image generation and editing.
-        It introduces a director-style agent that reasons about goals, supervises edits,
-        and verifies progress throughout the generation process.
-      </p>
+<!-- ================= FIGURES ================= -->
+<section class="section">
+  <div class="container is-max-desktop">
 
-      <div class="grid-3">
-        <div class="card core">
-          <h3>Planner (VLM)</h3>
-          <p>
-            Decomposes long instructions into structured goals and decides
-            when to generate, edit, verify, or stop.
-          </p>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Framework Overview</h2>
+        <div class="publication-image">
+          <img src="./static/images/fig1_overview.png" alt="Framework Overview">
         </div>
-
-        <div class="card">
-          <h3>Editor (Diffusion)</h3>
-          <p>
-            Executes focused visual updates without retraining
-            high-quality backbone models.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Verifier (VLM Judge)</h3>
-          <p>
-            Evaluates goal satisfaction, provides structured feedback,
-            and triggers rollback when regressions occur.
-          </p>
+        <div class="content has-text-justified">
+          VisionDirector introduces a director-style vision–language agent that
+          decomposes long, multi-goal instructions into structured goals and
+          supervises generation and editing through a closed-loop process with
+          verification and rollback.
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ================= CLOSED LOOP ================= -->
-  <section class="light">
-    <div class="container">
-      <h2>Closed-Loop Refinement</h2>
-      <p>
-        VisionDirector iteratively plans, edits, and verifies images until all goals
-        are satisfied or no further improvements are possible.
-      </p>
-
-      <div class="figure">
-        <img src="assets/closed_loop_example.png" alt="Closed-loop refinement">
-        <div class="caption">
-          Multi-step refinement with goal tracking, verification, and rollback.
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">LGBench: Long-Goal Benchmark</h2>
+        <div class="publication-image">
+          <img src="./static/images/fig2_lgbench.png" alt="LGBench Dataset">
+        </div>
+        <div class="content has-text-justified">
+          LGBench evaluates long-horizon instruction following beyond single-shot
+          generation, covering both text-to-image and image-to-image tasks with
+          diverse goal types.
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ================= GRPO ================= -->
-  <section>
-    <div class="container">
-      <h2>Efficient Planning with GRPO</h2>
-      <p>
-        We further fine-tune the planner using Group Relative Policy Optimization (GRPO),
-        teaching the director when to edit, verify, or stop.
-      </p>
-
-      <p>
-        GRPO reduces editing rounds by <b>26%</b> while improving overall goal coverage,
-        without retraining diffusion backbones.
-      </p>
-    </div>
-  </section>
-
-  <!-- ================= BENCHMARK ================= -->
-  <section class="light">
-    <div class="container">
-      <h2>LGBench: Long-Goal Benchmark</h2>
-      <p>
-        LGBench is a dual-modality benchmark designed to evaluate long-horizon
-        instruction following in both text-to-image and image-to-image settings.
-      </p>
-
-      <ul>
-        <li>2,000 tasks (1,000 T2I + 1,000 I2I)</li>
-        <li>29,000+ annotated goals</li>
-        <li>Automated goal-level verification</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ================= RESULTS ================= -->
-  <section>
-    <div class="container">
-      <h2>Results</h2>
-      <p>
-        VisionDirector consistently improves multi-goal adherence across complex
-        generation and editing tasks.
-      </p>
-
-      <div class="figure">
-        <img src="assets/qualitative_results.png" alt="Qualitative results">
-        <div class="caption">
-          Representative qualitative comparisons on complex multi-goal scenes.
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Adaptive Planning Behavior</h2>
+        <div class="publication-image">
+          <img src="./static/images/fig3_planning_behavior.png" alt="Planning Behavior">
+        </div>
+        <div class="content has-text-justified">
+          VisionDirector adaptively switches between one-shot generation and staged
+          refinement as instruction complexity increases, demonstrating rational
+          planning behavior.
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ================= FOOTER ================= -->
-  <footer>
-    © 2026 VisionDirector Project Page · HKUST / CUHK / Huawei Research
-  </footer>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Qualitative Results</h2>
+        <div class="publication-image">
+          <img src="./static/images/fig4_results.png" alt="Qualitative Results">
+        </div>
+        <div class="content has-text-justified">
+          VisionDirector consistently improves multi-goal adherence on complex
+          generation and editing tasks, particularly for layout, typography,
+          and identity preservation.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= BIBTEX ================= -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+<pre><code>@article{chu2026visiondirector,
+  title   = {VisionDirector: Vision-Language Guided Closed-Loop Refinement for Generative Image Synthesis},
+  author  = {Chu, Meng and Yang, Senqiao and Che, Haoxuan and others},
+  journal = {CVPR},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        This website is licensed under a
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+          Creative Commons Attribution-ShareAlike 4.0 International License
+        </a>.
+      </p>
+      <p>
+        Website template adapted from
+        <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+      </p>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
