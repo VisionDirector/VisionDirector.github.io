@@ -5,7 +5,7 @@
   <meta name="description"
         content="VisionDirector: Vision-Language Guided Closed-Loop Refinement for Generative Image Synthesis.">
   <meta name="keywords"
-        content="Vision-Language Models, Image Generation, Image Editing, Diffusion Models, Agents, Reinforcement Learning">
+        content="Vision-Language Models, Image Generation, Image Editing, Diffusion Models, Agents, Reinforcement Learning, LGBench">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>
@@ -27,6 +27,110 @@
   <link rel="stylesheet" href="./static/css/index.css">
 
   <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+  <style>
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .stat-card.alt {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+    .stat-card.green {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+    .teaser-image {
+      margin: 2rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .teaser-image img {
+      width: 100%;
+      display: block;
+    }
+    .method-steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+    }
+    .method-step {
+      background: #f5f5f5;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      color: #363636;
+    }
+    .method-step span {
+      color: #667eea;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 0.75rem;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    .comparison-table th {
+      background: #f8f8f8;
+      font-weight: 600;
+    }
+    .comparison-table tr:hover {
+      background: #fafafa;
+    }
+    .highlight-row {
+      background: linear-gradient(90deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%) !important;
+      font-weight: 600;
+    }
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ddd, transparent);
+      margin: 3rem 0;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 768px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .demo-item img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 
 <body>
@@ -47,14 +151,14 @@
           <div class="is-size-5 publication-authors">
             <span class="author-block">Meng Chu<sup>1</sup>,</span>
             <span class="author-block">Senqiao Yang<sup>2</sup>,</span>
-           <span class="author-block">Haoxuan Che<sup>3</sup><sup>*†</sup>,</span>
+            <span class="author-block">Haoxuan Che<sup>3*†</sup>,</span>
             <span class="author-block">Suiyun Zhang<sup>3</sup>,</span>
             <span class="author-block">Xichen Zhang<sup>1</sup>,</span>
             <span class="author-block">Shaozuo Yu<sup>2</sup>,</span>
             <span class="author-block">Haokun Gui<sup>1</sup>,</span>
             <span class="author-block">Zhefan Rao<sup>1</sup>,</span>
             <span class="author-block">Dandan Tu<sup>3</sup>,</span>
-            <span class="author-block">Rui Liu<sup>3</sup><sup>*</sup>,</span>
+            <span class="author-block">Rui Liu<sup>3*</sup>,</span>
             <span class="author-block">Jiaya Jia<sup>1</sup></span>
           </div>
 
@@ -73,7 +177,7 @@
           <div class="publication-links">
 
             <span class="link-block">
-              <a href="https://arxiv.org/abs/XXXX.XXXXX"
+              <a href="https://arxiv.org/abs/2512.19243"
                  class="external-link button is-normal is-rounded is-dark">
                 <span class="icon">
                   <i class="ai ai-arxiv"></i>
@@ -83,32 +187,22 @@
             </span>
 
             <span class="link-block">
-              <a href="./static/pdfs/supplementary.pdf"
-                 class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="fas fa-file-pdf"></i>
-                </span>
-                <span>Supplementary</span>
-              </a>
-            </span>
-
-            <span class="link-block">
-              <a href="https://github.com/your-org/VisionDirector"
-                 class="external-link button is-normal is-rounded is-dark">
+              <a href="#"
+                 class="external-link button is-normal is-rounded is-dark" style="opacity: 0.6; cursor: not-allowed;">
                 <span class="icon">
                   <i class="fab fa-github"></i>
                 </span>
-                <span>Code</span>
+                <span>Code (Coming Soon)</span>
               </a>
             </span>
 
             <span class="link-block">
-              <a href="https://github.com/your-org/LGBench"
-                 class="external-link button is-normal is-rounded is-dark">
+              <a href="#"
+                 class="external-link button is-normal is-rounded is-dark" style="opacity: 0.6; cursor: not-allowed;">
                 <span class="icon">
                   <i class="fas fa-database"></i>
                 </span>
-                <span>LGBench Dataset</span>
+                <span>LGBench Dataset (Coming Soon)</span>
               </a>
             </span>
 
@@ -120,6 +214,19 @@
   </div>
 </section>
 
+<!-- ================= TEASER ================= -->
+<section class="section" style="padding-top: 0;">
+  <div class="container is-max-widescreen">
+    <div class="teaser-image">
+      <img src="./static/images/VisionDirector_TeaserV2-1.png" alt="VisionDirector Teaser">
+    </div>
+    <p class="has-text-centered is-size-6" style="color: #666; margin-top: 1rem;">
+      VisionDirector enables <b>automatic step-by-step refinement</b> for both Image Editing and Image Generation tasks,
+      achieving superior multi-goal alignment compared to closed-source models.
+    </p>
+  </div>
+</section>
+
 <!-- ================= ABSTRACT ================= -->
 <section class="section">
   <div class="container is-max-desktop">
@@ -127,82 +234,244 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
-          Professional image creation often relies on long, multi-goal instructions
-          specifying global composition, local object placement, typography, and
-          stylistic constraints. While modern diffusion models achieve strong visual
-          fidelity, they frequently fail to satisfy such tightly coupled objectives.
-          <br><br>
-          To systematically expose this gap, we introduce <b>LongGoalBench (LGBench)</b>,
-          a dual-modality benchmark comprising 2,000 text-to-image and image-to-image
-          tasks with over 29,000 annotated goals and automated goal-level verification.
-          <br><br>
-          We further propose <b>VisionDirector</b>, a vision-language guided closed-loop
-          framework that decomposes long instructions into structured goals, dynamically
-          plans generation or editing actions, and verifies goal satisfaction after each
-          step without retraining diffusion backbones.
+          <p>
+            The field of visual content creation has progressed rapidly with the rise of diffusion models.
+            However, professional image creation often relies on <b>long, multi-goal instructions</b>
+            specifying global composition, local object placement, typography, and stylistic constraints.
+            While modern diffusion models achieve strong visual fidelity, they frequently fail to satisfy
+            such tightly coupled objectives.
+          </p>
+          <p>
+            To systematically expose this gap, we introduce <b>LongGoalBench (LGBench)</b>,
+            a dual-modality benchmark comprising <b>2,000 tasks</b> (1,000 T2I + 1,000 I2I) with over
+            <b>29,000+ annotated goals</b> and automated goal-level verification. LGBench stresses
+            multi-attribute alignment rather than simple prompt fidelity, with each task requiring
+            satisfaction of 10–23 quantitative goals.
+          </p>
+          <p>
+            We further propose <b>VisionDirector</b>, a training-free, vision-language guided closed-loop
+            framework that decomposes long instructions into structured goals, dynamically plans
+            generation or editing actions, and verifies goal satisfaction after each step—achieving
+            <b>30% improvement on GenEval</b> and <b>60% improvement on ComplexBench</b> over
+            state-of-the-art methods.
+          </p>
+        </div>
+
+        <!-- Method Steps -->
+        <div class="method-steps">
+          <div class="method-step"><span>D</span>escribe</div>
+          <div class="method-step"><span>I</span>nspect</div>
+          <div class="method-step"><span>R</span>evise</div>
+          <div class="method-step"><span>E</span>dit</div>
+          <div class="method-step"><span>C</span>onverge</div>
+          <div class="method-step"><span>T</span>oward</div>
+          <div class="method-step"><span>O</span>ptimal</div>
+          <div class="method-step"><span>R</span>endering</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LGBENCH STATS ================= -->
+<section class="section" style="background: #fafafa;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">LGBench: LongGoal Benchmark</h2>
+    <p class="has-text-centered" style="margin-bottom: 2rem; color: #666;">
+      A director-style stress test for multi-goal image generation and editing
+    </p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">2,000</div>
+        <div class="stat-label">Total Tasks<br>(1K T2I + 1K I2I)</div>
+      </div>
+      <div class="stat-card alt">
+        <div class="stat-number">29,000+</div>
+        <div class="stat-label">Annotated Goals</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">18.0</div>
+        <div class="stat-label">Avg Goals per T2I Prompt</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">418</div>
+        <div class="stat-label">T2I Subcategories</div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="publication-image">
+          <img src="./static/images/bench_construction-1.png" alt="LGBench Construction" style="border-radius: 8px;">
+        </div>
+        <div class="content has-text-justified" style="margin-top: 1.5rem;">
+          <p><b>Goal Type Distribution:</b></p>
+          <ul>
+            <li><b>T2I:</b> Additive objects (31.8%), Textual overlays (16.8%), Visual effects (16.6%), Color constraints (11.8%), Lighting (11.5%)</li>
+            <li><b>I2I:</b> Effects (34.4%), Color grading (21.5%), Typography (17.5%), Lighting refinement (15.8%)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benchmark Comparison Table -->
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column is-four-fifths">
+        <h3 class="title is-5 has-text-centered">Comparison with Existing Benchmarks</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Benchmark</th>
+              <th>Modalities</th>
+              <th>Prompt Complexity</th>
+              <th>Goals per Task</th>
+              <th>Scale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><b>LGBench (Ours)</b></td>
+              <td>T2I + I2I</td>
+              <td>Long-chain</td>
+              <td>10–23</td>
+              <td>2,000</td>
+            </tr>
+            <tr>
+              <td>DrawBench / VBench</td>
+              <td>T2I</td>
+              <td>Single sentence</td>
+              <td>1</td>
+              <td>200–300</td>
+            </tr>
+            <tr>
+              <td>TIFA / GenEval</td>
+              <td>T2I</td>
+              <td>Short + QA</td>
+              <td>1–2</td>
+              <td>500–1000</td>
+            </tr>
+            <tr>
+              <td>MagicBrush / EditEval</td>
+              <td>I2I</td>
+              <td>Short directive</td>
+              <td>Few</td>
+              <td>&lt;500</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FRAMEWORK ================= -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Framework Overview</h2>
+        <div class="publication-image">
+          <img src="./static/images/frame-1.png" alt="Framework Overview" style="border-radius: 8px;">
+        </div>
+        <div class="content has-text-justified" style="margin-top: 1.5rem;">
+          VisionDirector introduces a <b>director-style vision–language agent</b> that
+          decomposes long, multi-goal instructions into structured goals and
+          supervises generation and editing through a <b>closed-loop process</b> with
+          verification and rollback. The framework operates without retraining
+          diffusion backbones, leveraging the strong perceptual capabilities of VLMs.
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= FIGURES ================= -->
-<section class="section">
+<!-- ================= VLM DECISION PATTERN ================= -->
+<section class="section" style="background: #fafafa;">
   <div class="container is-max-desktop">
-
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Framework Overview</h2>
-        <div class="publication-image">
-          <img src="./static/images/fig1_overview.png" alt="Framework Overview">
-        </div>
-        <div class="content has-text-justified">
-          VisionDirector introduces a director-style vision–language agent that
-          decomposes long, multi-goal instructions into structured goals and
-          supervises generation and editing through a closed-loop process with
-          verification and rollback.
-        </div>
-      </div>
-    </div>
-
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">LGBench: Long-Goal Benchmark</h2>
-        <div class="publication-image">
-          <img src="./static/images/fig2_lgbench.png" alt="LGBench Dataset">
-        </div>
-        <div class="content has-text-justified">
-          LGBench evaluates long-horizon instruction following beyond single-shot
-          generation, covering both text-to-image and image-to-image tasks with
-          diverse goal types.
-        </div>
-      </div>
-    </div>
-
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Adaptive Planning Behavior</h2>
         <div class="publication-image">
-          <img src="./static/images/fig3_planning_behavior.png" alt="Planning Behavior">
+          <img src="./static/images/vlm_decision_patternV2-1.png" alt="VLM Decision Pattern" style="border-radius: 8px;">
         </div>
-        <div class="content has-text-justified">
-          VisionDirector adaptively switches between one-shot generation and staged
-          refinement as instruction complexity increases, demonstrating rational
-          planning behavior.
+        <div class="content has-text-justified" style="margin-top: 1.5rem;">
+          VisionDirector adaptively switches between <b>one-shot generation</b> and <b>staged
+          refinement</b> as instruction complexity increases, demonstrating rational
+          planning behavior. The VLM dynamically decides when to iterate based on
+          goal verification feedback.
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Qualitative Results</h2>
+<!-- ================= QUALITATIVE RESULTS ================= -->
+<section class="section">
+  <div class="container is-max-widescreen">
+    <h2 class="title is-3 has-text-centered">Qualitative Results</h2>
+    <p class="has-text-centered" style="margin-bottom: 2rem; color: #666;">
+      VisionDirector consistently improves multi-goal adherence on complex generation and editing tasks
+    </p>
+
+    <!-- I2I Demo -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-5">Image-to-Image Editing</h3>
         <div class="publication-image">
-          <img src="./static/images/fig4_results.png" alt="Qualitative Results">
+          <img src="./static/images/I2I_demo-1.png" alt="I2I Demo" style="border-radius: 8px;">
         </div>
-        <div class="content has-text-justified">
-          VisionDirector consistently improves multi-goal adherence on complex
-          generation and editing tasks, particularly for layout, typography,
-          and identity preservation.
+        <p class="has-text-centered is-size-7" style="color: #888; margin-top: 0.5rem;">
+          Multi-stage editing with comparison against Qwen-Image, Seeddream, GPT-Image, and KONTEXT-MAX
+        </p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- T2I Demo -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-5">Text-to-Image Generation</h3>
+        <div class="publication-image">
+          <img src="./static/images/T2I_demo-1.png" alt="T2I Demo" style="border-radius: 8px;">
+        </div>
+        <p class="has-text-centered is-size-7" style="color: #888; margin-top: 0.5rem;">
+          High-fidelity generation with multi-goal alignment
+        </p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Complex Scenes -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-5">Complex Scene Generation</h3>
+        <div class="publication-image">
+          <img src="./static/images/demo_complex-1.png" alt="Complex Demo" style="border-radius: 8px;">
+        </div>
+        <p class="has-text-centered is-size-7" style="color: #888; margin-top: 0.5rem;">
+          Handling extremely detailed instructions: Multidimensional Ballroom, Quantum Archaeology Laboratory, Forest Cathedral
+        </p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- More Examples -->
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <h3 class="title is-5">Step-by-Step Refinement</h3>
+        <div class="publication-image">
+          <img src="./static/images/demo_horse-1.png" alt="Horse Demo" style="border-radius: 8px;">
+        </div>
+      </div>
+      <div class="column is-half">
+        <h3 class="title is-5">Artistic Style Transfer</h3>
+        <div class="publication-image">
+          <img src="./static/images/demo_artifact-1.png" alt="Artifact Demo" style="border-radius: 8px;">
         </div>
       </div>
     </div>
@@ -211,14 +480,16 @@
 </section>
 
 <!-- ================= BIBTEX ================= -->
-<section class="section" id="BibTeX">
+<section class="section" id="BibTeX" style="background: #fafafa;">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-<pre><code>@article{chu2026visiondirector,
-  title   = {VisionDirector: Vision-Language Guided Closed-Loop Refinement for Generative Image Synthesis},
-  author  = {Chu, Meng and Yang, Senqiao and Che, Haoxuan and others},
-  journal = {CVPR},
-  year    = {2026}
+<pre><code>@inproceedings{chu2026visiondirector,
+  title     = {VisionDirector: Vision-Language Guided Closed-Loop Refinement for Generative Image Synthesis},
+  author    = {Chu, Meng and Yang, Senqiao and Che, Haoxuan and Zhang, Suiyun and 
+               Zhang, Xichen and Yu, Shaozuo and Gui, Haokun and Rao, Zhefan and 
+               Tu, Dandan and Liu, Rui and Jia, Jiaya},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2026}
 }</code></pre>
   </div>
 </section>
